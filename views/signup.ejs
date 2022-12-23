@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+</head>
+<body>
+    <form action="/signup" method="POST">
+        <input type="text" name="username">
+        <label for="username">Username</label>
+
+        <input type="email" name="email">
+        <label for="email">Email</label>
+
+        <input type="password" name="password">
+        <label for="password">Password</label>
+
+        <input type="hidden" id="createdOn" name="createdOn" value="<%=new Date(Date.now()).getMonth() + 1%>/<%=new Date(Date.now()).getDate()%>/<%=new Date(Date.now()).getFullYear()%>">
+
+        <button type="submit">Submit this piece of shit</button>
+    </form>
+</body>
+</html>
