@@ -6,6 +6,7 @@ const Post = mongoose.model(
       title: String,
       image: String,
       body: String,
+      imageURL: String,
       author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       replies: [ { type: mongoose.Schema.Types.ObjectId, ref: 'Reply' }],
       createdOn: Date,

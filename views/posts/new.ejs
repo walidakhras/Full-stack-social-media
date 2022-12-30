@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <title>New Post</title>
+</head>
+<body>
+    <% if (!session.loggedIn) { %>
+        <p>You must be logged in to create a new post!</p>
+        <a href="login">Login</a>
+    <% } else { %>
+    <form action="/new" method="POST" enctype="multipart/form-data">
+
+        <input type="text" name="title" required>
+        <label for="Title">Title</label>
+
+        <input type="text" name="body" required>
+        <label for="Body">Body</label>
+
+        <input type="file" name="image" id="image" accept="image/png, image/jpeg">
+        <label for="image">Image</label>
+
+
+        <button type="submit">Submit this piece of shit</button>
+    </form>
+    <% } %>
+
+    <!-- <script src="views\script.js"></script> -->
+</body>
+</html>

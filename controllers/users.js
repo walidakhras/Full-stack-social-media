@@ -20,11 +20,9 @@ const transporter = nodemailer.createTransport({
 })
 
 module.exports.login = async (req, res) => { User.findOne({ email: req.body.email }, function(err, user) {
-    // error occur
     if(err){
         return res.status(500).send({msg: err.message});
     }
-    // user is not found in database i.e. user is not registered yet.
     else if (!user){
         return res.status(401).send({ msg:'The email address ' + req.body.email + ' is not associated with any account. please check and try again!'});
     }
@@ -42,7 +40,7 @@ module.exports.login = async (req, res) => { User.findOne({ email: req.body.emai
         req.session.email = req.body.email
         req.session.user_id = user._id
         // return res.status(200).send('User successfully logged in.')
-        res.redirect('home')
+        res.redirect('/')
     }
 })}
 
@@ -60,7 +58,7 @@ module.exports.signup = async (req, res) => {
         else {
             let hashed_pw = hashPassword(req.body.password)
             
-            user = new User({ name: req.body.username, email: req.body.email, password: hashed_pw, createdOn: req.body.createdOn });
+            user = new User({ username: req.body.username, email: req.body.email, password: hashed_pw, createdOn: req.body.createdOn });
             user.save(function (err) {
                 if (err) { 
                   return res.status(500).send({msg:err.message});

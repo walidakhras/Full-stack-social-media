@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Edit this post</h1>
+
+    <form action="/posts/<%=post._id%>?_method=PUT" method="POST">
+        <div>
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title" value="<%=post.title%>">
+        </div>
+
+        <div>
+            <label for="body">Body</label>
+            <input type="text" name="body" id="body" value="<%=post.body%>">
+        </div>
+        <button type="submit">Edit</button>
+    </form>
+
+    <a href="/posts/<%=post._id%>">Discard</a>
+</body>
+</html>

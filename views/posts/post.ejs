@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <title>Show Post</title>
+</head>
+<body>
+    <div>
+        <%= data.post.title %>
+        <br>
+        <%= data.post.body %>
+        <br>
+        <%= data.author.username %>
+        <br>
+        <%= data.post.createdOn %>
+        <br>
+        <img src="<%=data.post.imageURL%>" alt="image">
+        <br>
+        <% if (data.session.loggedIn && (data.author._id == data.session.user_id)) { %>
+            <p><%=data.session.loggedIn%></p>
+            <p><%=data.author._id %> </p>
+            <p><%=data.session.user_id%></p>
+            <a href="/posts/edit/<%=data.post._id%>">Edit</a>
+            <form action="/posts/delete/<%=data.post._id%>?_method=DELETE" method="POST">
+                <button>Delete this post</button>
+            </form>
+        <% } %>
+    </div>
+</body>
+</html>
