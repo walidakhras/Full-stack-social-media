@@ -1,46 +1,6 @@
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EEEEE</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
-</head>
-<body>
+<% layout('partials/navbar')%>
 
-  <nav class="navbar is-white has-shadow">
-    <!-- logo / brand -->
-    <div class="navbar-brand">
-      
-    </div>
-  
-    <div class="navbar-menu" id="nav-links">
-      <!-- right links -->
-      <div class="navbar-end">
-        <% if (session.loggedIn) { %>
-        <a class="navbar-item" href="logout">Logout</a>
-        <% } else { %>
-        <a class="navbar-item" href="signup">Register</a>
-        <a class="navbar-item" href="login">Login</a>
-        <% } %>
-        <a class="navbar-item" href="posts">All posts</a>
-        <a class="navbar-item" href="new">New Post</a>
-      </div>
-    </div>
-  </nav>
-
-</body>
-</html>
-
-
-  <!-- <section class="section">
-    <div class="container">
-      <h1 class="title">
-        YOOO welcome to X
-      </h1>
-        <a href="signup">Register</a>
-        <a href="login">Login</a>
-        <a href="posts">All posts</a>
-        <a href="new">New Post</a>
-        <a href="logout">Logout</a>
-    </div>
-  </section> -->
+<div>
+  <p> <%= loggedInName %></p>
+  <p>WOWZERS!</p>
+</div>

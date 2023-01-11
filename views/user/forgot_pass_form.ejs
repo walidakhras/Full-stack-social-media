@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <title>Reset your password</title>
+</head>
+<body>
+    <h1>Enter new password</h1>
+
+    <form action="/forgot_your_pass/<%=user.email%>/<%=token%>?_method=PUT" method="POST">
+        <label for="pass1">Enter new password</label>
+        <input type="password" name="pass1" id="pass1">
+
+        <label for="pass2">Enter new password again</label>
+        <input type="password" name="pass2" id="pass2">
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <a href="/">Back</a>
+</body>
+</html>

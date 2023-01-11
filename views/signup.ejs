@@ -8,7 +8,7 @@
     <title>Sign Up</title>
 </head>
 <body>
-    <form action="/signup" method="POST">
+    <form action="/signup" method="POST" enctype="multipart/form-data">
         <input type="text" name="username">
         <label for="username">Username</label>
 
@@ -18,7 +18,8 @@
         <input type="password" name="password">
         <label for="password">Password</label>
 
-        <input type="hidden" id="createdOn" name="createdOn" value="<%=new Date(Date.now()).getMonth() + 1%>/<%=new Date(Date.now()).getDate()%>/<%=new Date(Date.now()).getFullYear()%>">
+        <input type="file" name="image" id="image" accept="image/png, image/jpeg, image/jpg">
+        <label for="image">Profile Picture</label>
 
         <button type="submit">Submit this piece of shit</button>
     </form>

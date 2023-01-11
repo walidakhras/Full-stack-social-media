@@ -15,10 +15,15 @@
         <br>
         <%= data.author.username %>
         <br>
+        <a href="/users/<%=data.author._id%>">View profile</a>
+        <br>
         <%= data.post.createdOn %>
         <br>
         <img src="<%=data.post.imageURL%>" alt="image">
         <br>
+        <% if (data.session.loggedIn) { %>
+        <a href="/posts/reply/<%=data.post._id%>">Reply</a>
+        <% } %>
         <% if (data.session.loggedIn && (data.author._id == data.session.user_id)) { %>
             <p><%=data.session.loggedIn%></p>
             <p><%=data.author._id %> </p>
@@ -28,6 +33,28 @@
                 <button>Delete this post</button>
             </form>
         <% } %>
+        
+        <div>
+            <% if (data.replies.length === 0) { %>
+                <p>No replies to show.</p>
+            <% } else { %>
+                <% for (let reply of data.replies) { %>
+                <p><%=reply._id%></p>
+                <p>Body: <%=reply.body%></p>
+                <img src="<%=reply.imageURL%>" alt="reply_image">
+                <% if (data.session.loggedIn) { %>
+                <a href="/posts/reply/<%=data.post._id%>/<%=reply._id%>">Reply to this reply</a>
+                <% } %>
+
+                <% if (data.session.loggedIn && (data.author._id == data.session.user_id)) { %>
+                <a href="/posts/reply/edit/<%=reply._id%>">Edit</a>
+                <form action="/posts/reply/delete/<%=reply._id%>?_method=DELETE" method="POST">
+                    <button>Delete this reply</button>
+                </form>
+                <!-- <a href="/posts/reply/delete/<%=reply._id%>">Delete</a> -->
+                <% } %>
+            <% } } %>
+        </div>
     </div>
 </body>
 </html>
