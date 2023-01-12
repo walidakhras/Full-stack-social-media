@@ -30,7 +30,17 @@
       </aside>
       
       
-      <div class="column">
+    <div class="column is-one-quarter is-offset-one-fifth">
+    
+        <figure class="image is-96x96">
+            <% if (user.image && user.imageURL) { %>
+            <img class="is-rounded" src="<%=user.imageURL%>" alt="profile_img">
+            <% } else { %>
+            <img class="is-rounded" src="https://www.nicepng.com/png/detail/73-730154_open-default-profile-picture-png.png" alt="profile_img"> 
+            <% } %>
+        </figure>
+
+
         <p><%=user.username%></p>
     <p><%=user.email%></p>
     <p><%=user.createdOn%></p>
