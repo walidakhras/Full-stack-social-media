@@ -1,4 +1,48 @@
-<!DOCTYPE html>
+<% layout('partials/navbar')%>
+
+<div class="mt-6">
+    <div class="columns mt-6">
+
+        <form class="column is-half is-offset-one-quarter" action="/users/edit/<%=user._id%>?_method=PUT" method="POST" enctype="multipart/form-data">
+            
+            <div class="field">
+                <h1 class="title is-4">Edit Your Information</h1>
+            </div>
+
+            <div class="field">
+                <p class="control has-icons-left">
+                  <input class="input" type="text" name="username" placeholder="<%=user.username%>">
+                  <span class="icon is-small is-left">
+                    <i class="bi bi-person"></i>
+                  </span>
+                </p>
+            </div>
+
+            <div class="field">
+                <p class="control has-icons-left">
+                  <input class="input" type="file" name="image" accept="image/png, image/jpeg, image/jpg">
+                  <span class="icon is-small is-left">
+                    <i class="bi bi-images"></i>
+                  </span>
+                </p>
+            </div>
+                  
+            <div class="field">
+                <p class="control">
+                        <button type="submit" class="button is-success">
+                            Edit
+                        </button>
+                </p>
+            </div>
+            <a href="/">Back</a>
+        </form>
+
+        
+    </div>
+</div>
+
+
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,4 +66,4 @@
 
     <a href="/users/settings/<%=user._id%>">Back</a>
 </body>
-</html>
+</html> -->

@@ -11,7 +11,7 @@
 <body>
     <nav class="navbar is-transparent">
         <div class="navbar-brand">
-          <a class="navbar-item" href="">
+          <a class="navbar-item" href="/">
             <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
           </a>
           <div class="navbar-burger" data-target="navbarExampleTransparentExample">
@@ -52,7 +52,7 @@
 
                 <% if (isLoggedIn) { %>
                     <p class="control">
-                        <a class="bd-tw-button button" href="logout">
+                        <a class="bd-tw-button button" href="/logout">
                           <span>
                             Logout
                           </span>
@@ -68,7 +68,7 @@
                     </p>
                 <% } else { %>
                 <p class="control">
-                  <a class="bd-tw-button button" href="login">
+                  <a class="bd-tw-button button" href="/login">
                     <span>
                       Login
                     </span>
@@ -76,7 +76,7 @@
                 </p>
 
                 <p class="control">
-                  <a class="button is-primary" href="signup">
+                  <a class="button is-primary" href="/signup">
                     <span>Register</span>
                   </a>
                 </p>

@@ -2,7 +2,12 @@
 
 <div class="mt-6">
     <div class="columns mt-6">
+
         <form class="column is-half is-offset-one-quarter" action="/signup" method="POST" enctype="multipart/form-data">
+            <div class="field">
+                <h1 class="title is-4">Register</h1>
+            </div>
+            
             <div class="field">
                 <p class="control has-icons-left">
                   <input class="input" type="email" name="email" placeholder="Email" required>
@@ -34,7 +39,7 @@
         
             <div class="field">
                 <p class="control has-icons-left">
-                    <input class="input" name="password2" type="password" placeholder="Enter Password Again">
+                    <input class="input" name="password2" type="password" placeholder="Enter Password Again" required>
                     <span class="icon is-small is-left">
                         <i class="bi bi-lock-fill"></i>
                     </span>
@@ -43,7 +48,7 @@
         
             <div class="field">
                 <p class="control has-icons-left">
-                    <input class="input" type="file" name="image" id="image" accept="image/png, image/jpeg, image/jpg" required>
+                    <input class="input" type="file" name="image" id="image" accept="image/png, image/jpeg, image/jpg">
                     <span class="icon is-small is-left">
                         <i class="bi bi-images"></i>
                     </span>
@@ -64,20 +69,4 @@
 </div>
 
 
-
-<!-- <div class="columns is-vcentered">
-    <div class="column is-half is-offset-one-quarter">
-        <form action="/signup" method="POST" enctype="multipart/form-data">
-            <input class="input" type="text" name="username">
-    
-            <input class="input" type="email" name="email">
-    
-            <input class="input" type="password" name="password">
-    
-            <input class="input" type="file" name="image" id="image" accept="image/png, image/jpeg, image/jpg">
-    
-            <button type="submit">Submit this piece of shit</button>
-        </form>
-    </div>
-</div> -->
 

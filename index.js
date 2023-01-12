@@ -61,6 +61,15 @@ app.use(passSession)
 
 //upload.single('image')
 
+const isLoggedIn = async (req, res, next) => {
+    if (!req.session.loggedIn) {
+        console.log("LOGGED IN " + req.session.loggedIn)
+        req.flash('info', 'You must be logged in')
+        return res.redirect('/login')
+    }
+    next()
+}
+
 
 app.get("/", (req, res) => {
     res.render("home", { session: req.session })
@@ -122,7 +131,7 @@ app.put('/users/edit/:id', upload.single('image'), user_controller.edit_user)
 
 app.delete('/users/delete/:id', user_controller.delete_user)
 
-app.get('/users/password/:id', user_controller.render_password_change)
+app.get('/users/password/:id', isLoggedIn, user_controller.render_password_change)
 
 app.put('/users/password/:id', user_controller.change_password)
 
