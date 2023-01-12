@@ -1,0 +1,29 @@
+<% layout('partials/navbar')%>
+
+<div class="block mt-6">
+    <% for (let post of posts) { %>
+        <% if (post.isMain) { %>
+        <div class="block box">
+            <div class="columns">
+                <div class="column is-one-third">
+                    <figure class="">
+                        <img src="<%=post.imageURL%>" alt="post">
+                    </figure>
+                </div>
+
+                <div class="column">
+                    <a href="posts/<%= post._id %>"> <%= post.title %></a>
+                    <p><%= post.body %></p>
+                    <p><%= post.createdOn %></p>
+                    <% if (post.replies.length === 1) { %>
+                    <p>1 reply</p>
+                    <% } else { %>
+                    <p><%= post.replies.length %> replies</p>
+                    <% } %>
+                </div>
+            </div>
+        
+        </div>
+        <% } } %>
+</div>
+

@@ -1,0 +1,51 @@
+<% layout('partials/navbar')%>
+
+<div class="mt-6">
+    <div class="columns mt-6">
+
+        <form class="column is-half is-offset-one-quarter" action="/forgot_your_pass/<%=user.email%>/<%=token%>?_method=PUT" method="POST">
+            
+            <div class="field">
+                <h1 class="title is-4">Reset your password</h1>
+            </div>
+
+            <div class="field">
+                <p class="control has-icons-left">
+                  <input class="input" type="email" name="email" placeholder="Email" required>
+                  <span class="icon is-small is-left">
+                    <i class="bi bi-envelope-fill"></i>
+                  </span>
+                </p>
+            </div>
+
+            <div class="field">
+                <p class="control has-icons-left">
+                  <input class="input" type="password" name="pass1" placeholder="Password" required>
+                  <span class="icon is-small is-left">
+                    <i class="bi bi-lock"></i>
+                  </span>
+                </p>
+            </div>
+
+            <div class="field">
+                <p class="control has-icons-left">
+                  <input class="input" type="password" name="pass2" placeholder="Enter password again" required>
+                  <span class="icon is-small is-left">
+                    <i class="bi bi-lock-fill"></i>
+                  </span>
+                </p>
+            </div>
+                  
+            <div class="field">
+                <p class="control">
+                        <button type="submit" class="button is-success">
+                            Submit
+                        </button>
+                </p>
+            </div>
+            <a href="/">Back</a>
+        </form>
+
+        
+    </div>
+</div>
