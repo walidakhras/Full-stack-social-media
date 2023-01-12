@@ -1,0 +1,32 @@
+<% if(flashSuccess && flashInfo.length) { %>
+<div class="notification is-primary">
+    <button class="delete"></button>
+    <%= flashSuccess %>
+</div>
+<% } %>
+
+<% if(flashInfo && flashInfo.length) { %>
+    <div class="notification is-info">
+        <button class="delete"></button>
+        <%= flashInfo %>
+    </div>
+<% } %>
+
+<% if(flashError && flashError.length) { %>
+    <div class="notification is-danger">
+        <button class="delete"></button>
+        <%= flashError %>
+    </div>
+<% } %>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+      const $notification = $delete.parentNode;
+  
+      $delete.addEventListener('click', () => {
+        $notification.parentNode.removeChild($notification);
+      });
+    });
+  });
+</script>

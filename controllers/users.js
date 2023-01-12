@@ -17,6 +17,8 @@ const hashPassword = (pw) => {
 
 const randomImageName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex')
 
+const flashAndRedirect = () => {}
+
 const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3")
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
@@ -46,19 +48,27 @@ const s3 = new S3Client({
 
 
 module.exports.login = async (req, res) => { User.findOne({ email: req.body.email }, async function(err, user) {
-    if(err){
-        return res.status(500).send({msg: err.message});
+    if (err) {
+        req.flash('error', 'An unknown error occurred. Please try logging in again.')
+        res.redirect('login')
+        console.log(err.message)
     }
     else if (!user){
-        return res.status(401).send({ msg:'The email address ' + req.body.email + ' is not associated with any account. please check and try again!'});
+        req.flash('info', 'This email is not associated with any account. If this is your email, please register.')
+        res.redirect('login')
+        // return res.status(401).send({ msg:'The email address ' + req.body.email + ' is not associated with any account. please check and try again!'});
     }
     // comapre user's password if user is find in above step
     else if(!Bcrypt.compareSync(req.body.password, user.password)) {
-        return res.status(401).send({msg:'Wrong Password!'})
+        req.flash('error', 'Incorrect password')
+        res.redirect('login')
+        // return res.status(401).send({msg:'Wrong Password!'})
     }
     // check user is verified or not
     else if (!user.isVerified){
-        return res.status(401).send({msg:'Your Email has not been verified. Please click on resend'});
+        req.flash('error', 'This email has not been verified.')
+        res.redirect('login')
+        // return res.status(401).send({msg:'Your Email has not been verified. Please click on resend'});
     } 
     // user successfully logged in
     else {
@@ -75,11 +85,16 @@ module.exports.signup = async (req, res) => {
     User.findOne({ email: req.body.email }, async (err, user) => {
 
         if (err) {
-            return res.status(500).send({ msg: err.message});
+            req.flash('error', 'An unknown error occurred. Please try again.')
+            res.redirect('signup')
+            console.log(err.message)
+            // return res.status(500).send({ msg: err.message});
         }
         
         else if (user) {
-            return res.status(400).send({ msg:'This email address is already associated with another account.'});
+            req.flash('error', 'This email address is already associated with another account.')
+            res.redirect('signup')
+            // return res.status(400).send({ msg:'This email address is already associated with another account.'});
         }
         
         else {
@@ -100,13 +115,19 @@ module.exports.signup = async (req, res) => {
             user = new User({ username: req.body.username, email: req.body.email, password: hashed_pw, image: imageName })
             user.save(function (err) {
                 if (err) { 
-                  return res.status(500).send({msg:err.message});
+                    req.flash('error', 'An unknown error occurred the user. Please try again.')
+                    res.redirect('signup')
+                    console.log(err.message)
+                    // return res.status(500).send({msg:err.message});
                 }
                 
                 const token = new Token({ _userId: user._id, token: crypto.randomBytes(16).toString('hex') })
                 token.save((err) => {
                   if(err){
-                    return res.status(500).send({msg:err.message})
+                    req.flash('error', 'An unknown error occurred with the token. Please try again.')
+                    res.redirect('signup')
+                    console.log(err.message)
+                    // return res.status(500).send({msg:err.message})
                   }
 
                 const mailOptions = { 
@@ -117,9 +138,14 @@ module.exports.signup = async (req, res) => {
                 
                 transporter.sendMail(mailOptions, function (err) {
                     if (err) { 
-                        return res.status(500).send({ msg:'Technical Issue!, Please click on resend for verify your Email.'})
+                        req.flash('error', 'An unknown error occurred with nodemailer. Please try again.')
+                        res.redirect('signup')
+                        console.log(err.message)
+                        // return res.status(500).send({ msg:'Technical Issue!, Please click on resend for verify your Email.'})
                     }
-                    return res.status(200).send('A verification email has been sent to ' + user.email)
+                    req.flash('info', 'A verification email has been sent to ' + user.email)
+                    res.redirect('login')
+                    // return res.status(200).send('A verification email has been sent to ' + user.email)
                 })
                 })
             })

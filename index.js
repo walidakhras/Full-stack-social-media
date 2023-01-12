@@ -5,6 +5,7 @@ const session = require('express-session')
 const method_override = require('method-override')
 const multer = require('multer')
 const ejsMate = require('ejs-mate')
+const flash = require('connect-flash')
 
 const user_controller = require('./controllers/users.js')
 const post_controller = require('./controllers/posts')
@@ -22,6 +23,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(__dirname))
 app.use(method_override('_method'))
+app.use(flash())
 
 app.use(session({
 	secret: process.env.SESSION_SECRET,
@@ -49,6 +51,9 @@ function passSession(req, res, next) {
     res.locals.isLoggedIn = req.session.loggedIn
     res.locals.loggedInID = req.session.user_id
     res.locals.loggedInName = req.session.username
+    res.locals.flashSuccess = req.flash('success')
+    res.locals.flashInfo = req.flash('info')
+    res.locals.flashError = req.flash('error')
     next()
 }
 

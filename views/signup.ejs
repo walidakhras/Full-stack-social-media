@@ -1,27 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
-    <title>Sign Up</title>
-</head>
-<body>
-    <form action="/signup" method="POST" enctype="multipart/form-data">
-        <input type="text" name="username">
-        <label for="username">Username</label>
+<% layout('partials/navbar')%>
 
-        <input type="email" name="email">
-        <label for="email">Email</label>
+<div class="mt-6">
+    <div class="columns mt-6">
+        <form class="column is-half is-offset-one-quarter" action="/signup" method="POST" enctype="multipart/form-data">
+            <div class="field">
+                <p class="control has-icons-left">
+                  <input class="input" type="email" name="email" placeholder="Email" required>
+                  <span class="icon is-small is-left">
+                    <i class="bi bi-envelope-fill"></i>
+                  </span>
+                </p>
+            </div>
+        
+            <div class="field">
+                <p class="control has-icons-left">
+                    <input class="input" type="text" name="username" placeholder="Username" required>
+                    <span class="icon is-small is-left">
+                        <i class="bi bi-person"></i>
+                    </span>
+                </p>
+            </div>
+            
+        
+            <div class="field">
+                <p class="control has-icons-left">
+                    <input class="input" name="password" type="password" placeholder="Password" required>
+                    <span class="icon is-small is-left">
+                        <i class="bi bi-lock"></i>
+                    </span>
+                </p>
+            </div>
+        
+        
+            <div class="field">
+                <p class="control has-icons-left">
+                    <input class="input" name="password2" type="password" placeholder="Enter Password Again">
+                    <span class="icon is-small is-left">
+                        <i class="bi bi-lock-fill"></i>
+                    </span>
+                </p>
+            </div>
+        
+            <div class="field">
+                <p class="control has-icons-left">
+                    <input class="input" type="file" name="image" id="image" accept="image/png, image/jpeg, image/jpg" required>
+                    <span class="icon is-small is-left">
+                        <i class="bi bi-images"></i>
+                    </span>
+                </p>
+            </div>
+        
+        
+            <div class="field">
+                <p class="control">
+                    <button type="submit" class="button is-success">
+                        Register
+                    </button>
+                </p>
+            </div>
+        
+        </form>
+    </div>
+</div>
 
-        <input type="password" name="password">
-        <label for="password">Password</label>
 
-        <input type="file" name="image" id="image" accept="image/png, image/jpeg, image/jpg">
-        <label for="image">Profile Picture</label>
 
-        <button type="submit">Submit this piece of shit</button>
-    </form>
-</body>
-</html>
+<!-- <div class="columns is-vcentered">
+    <div class="column is-half is-offset-one-quarter">
+        <form action="/signup" method="POST" enctype="multipart/form-data">
+            <input class="input" type="text" name="username">
+    
+            <input class="input" type="email" name="email">
+    
+            <input class="input" type="password" name="password">
+    
+            <input class="input" type="file" name="image" id="image" accept="image/png, image/jpeg, image/jpg">
+    
+            <button type="submit">Submit this piece of shit</button>
+        </form>
+    </div>
+</div> -->
+

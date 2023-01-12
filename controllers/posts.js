@@ -29,7 +29,7 @@ const s3 = new S3Client({
 const randomImageName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex')
 
 const saveS3Image = async (req) => {
-    const buffer = await sharp(req.file.buffer).resize({ height: 500, width: 500, fit: "contain" }).toBuffer()
+    const buffer = await sharp(req.file.buffer).resize({ height: 400, width: 400, fit: "contain" }).toBuffer()
     const imageName = randomImageName()
     const params = {
         Bucket: bucketName,

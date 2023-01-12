@@ -60,7 +60,7 @@
                     </p> 
 
                     <p class="control">
-                        <a class="bd-tw-button button" href="/users/settings/<%=session.user_id%>">
+                        <a class="bd-tw-button button" href="/users/settings/<%=loggedInID%>">
                           <span>
                             Profile Settings
                           </span>
@@ -89,6 +89,7 @@
       </nav>
 
       <main>
+        <%- include('flash') %>
         <%- body %>
       </main>
 </body>
