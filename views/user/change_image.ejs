@@ -1,22 +1,22 @@
 <% layout('partials/navbar')%>
 
-<div class="mt-6">
-    <div class="columns mt-6">
+    <div class="columns">
+        <%- include('../partials/aside') %>
 
-        <form class="column is-half is-offset-one-quarter" action="/users/edit/<%=user._id%>?_method=PUT" method="POST" enctype="multipart/form-data">
+        <form class="column is-half is-offset-one-quarter" action="/users/edit/image/<%=user._id%>?_method=PUT" method="POST" enctype="multipart/form-data">
             
             <div class="field">
-                <h1 class="title is-4">Edit Your Information</h1>
+                <h1 class="title is-4">Edit Your Profile Picture</h1>
             </div>
 
-            <div class="field">
+            <!-- <div class="field">
                 <p class="control has-icons-left">
                   <input class="input" type="text" name="username" placeholder="<%=user.username%>">
                   <span class="icon is-small is-left">
                     <i class="bi bi-person"></i>
                   </span>
                 </p>
-            </div>
+            </div> -->
 
             <div class="field">
                 <p class="control has-icons-left">
@@ -39,7 +39,6 @@
 
         
     </div>
-</div>
 
 
 <!-- <!DOCTYPE html>

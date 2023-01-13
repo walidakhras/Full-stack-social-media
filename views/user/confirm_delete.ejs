@@ -1,0 +1,21 @@
+<% layout('partials/navbar')%>
+
+<div class="columns">
+    <%- include('../partials/aside') %>
+      
+      
+    <div class="mt-6 column is-half is-offset-one-quarter">
+
+            <div class="field">
+                <h1 class="title is-4">All your data will be deleted. This is an irreversible action</h1>
+            </div>
+
+            <form action="/users/delete/<%=user._id%>?_method=DELETE" method="POST">
+                <button class="button is-danger">Delete Account</button>
+            </form>
+            
+            <a href="/users/settings/<%=user._id%>">Go back</a>
+
+    </div>
+    
+</div>

@@ -236,7 +236,20 @@ module.exports.render_user_edit = async (req, res) => {
     res.render('user/edit_user', { user, session: req.session })
 }
 
-module.exports.edit_user = async (req, res) => {
+
+
+
+module.exports.render_image_edit = async (req, res) => {
+    const user = await User.findById(req.params.id)
+    res.render('user/change_image', { user, session: req.session })
+}
+
+module.exports.render_username_edit = async (req, res) => {
+    const user = await User.findById(req.params.id)
+    res.render('user/change_username', { user, session: req.session })
+}
+
+module.exports.edit_user_image = async (req, res) => {
     const user = await User.findById(req.params.id)
 
     if (user.image) {
@@ -246,10 +259,6 @@ module.exports.edit_user = async (req, res) => {
         }
         const command = new DeleteObjectCommand(params)
         await s3.send(command)
-    }
-
-    if (req.body.username) {
-        user.username = req.body.username
     }
 
     if (req.file) {
@@ -269,26 +278,21 @@ module.exports.edit_user = async (req, res) => {
     }
 
     await user.save()
+    req.flash('success', 'Profile picture successfully updated')
     return res.redirect(`/users/settings/${user._id}`)
 }
 
-module.exports.delete_user = async (req, res) => {
+module.exports.edit_username = async (req, res) => {
     const user = await User.findById(req.params.id)
 
-    const params = {
-        Bucket: bucketName,
-        Key: user.image,
+    if (req.body.username) {
+        user.username = req.body.username
     }
-    const command = new DeleteObjectCommand(params)
-    await s3.send(command)
-
-
-    await Post.deleteMany({ author: req.params.id })
-    await Token.findOneAndDelete({ _userID: req.params.id })
-    await User.findByIdAndDelete(req.params.id)
-
-    return res.redirect('/')
+    await user.save()
+    req.flash('success', 'Username successfully updated')
+    return res.redirect(`/users/settings/${user._id}`)
 }
+
 
 module.exports.render_password_change = async (req, res) => {
     const user = await User.findById(req.params.id)
@@ -310,11 +314,12 @@ module.exports.change_password = async (req, res) => {
     } else {
         user.password = hashPassword(req.body.newpass)
         await user.save()
-        req.session.destroy()
         req.flash('success', 'Password successfully changed.')
-        return res.redirect('/login')
+        // req.session.destroy()
+        // // req.flash('success', 'Password successfully changed.') We destroy the session, then say password saved. Think of a better method
+        return res.redirect('/')
     }
-    res.redirect(`/users/password/${user._id}`)
+    res.redirect(`/users/edit/password/${user._id}`)
 }
 
 module.exports.render_forgot_password = async (req, res) => {
@@ -386,3 +391,51 @@ module.exports.change_forgotten_pass = async (req, res) => {
     }
 }   
 
+module.exports.render_bio_edit = async (req, res) => {
+    const user = await User.findById(req.params.id)
+    res.render('user/change_bio', { user, session: req.session })
+}
+
+module.exports.edit_bio = async (req, res) => {
+    const user = await User.findById(req.params.id)
+
+    if (req.body.bio.length > 300) {
+        req.flash('error', "Bio has a max length of 300")
+        return res.redirect('/')
+    }
+
+    else if (!req.body.bio) {
+        user.bio = ""
+    } else {
+        user.bio = req.body.bio
+    }
+        
+    await user.save()
+    req.flash('success', "Bio successfully changed")
+    return res.redirect('/')
+}
+
+module.exports.render_confirm_delete = async (req, res) => {
+    const user = await User.findById(req.params.id)
+    res.render('user/confirm_delete', { user, session: req.session })
+}
+
+module.exports.delete_user = async (req, res) => {
+    const user = await User.findById(req.params.id)
+
+    if (user.image) {
+        const params = {
+            Bucket: bucketName,
+            Key: user.image,
+        }
+        const command = new DeleteObjectCommand(params)
+        await s3.send(command)
+    }
+
+    await Post.deleteMany({ author: req.params.id })
+    await Token.findOneAndDelete({ _userID: req.params.id })
+    await User.findByIdAndDelete(req.params.id)
+    
+    req.session.destroy()
+    return res.redirect('/')
+}

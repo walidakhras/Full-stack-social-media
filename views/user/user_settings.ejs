@@ -1,38 +1,13 @@
 <% layout('partials/navbar')%>
 
 <div class="columns">
-    <aside class="ml-4 mt-6 menu column is-one-quarter">
-        
-        <ul class="menu-list">
-            <p class="menu-label">
-                PROFILE
-            </p>
-          <li><a class="mb-2">View profile</a></li>
-          <li>
-            <p class="menu-label">
-                Edit your information
-            </p>
-            <!-- <a>Edit Your Information</a> -->
-            <ul>
-              <li><a>Change username</a></li>
-              <li><a>Change password</a></li>
-              <li><a>Add or change profile picture</a></li>
-              <li><a>Add or change bio</a></li>
-            </ul>
-          </li>
-          <p class="menu-label">
-            POSTS
-          </p>
-          <li><a>View all posts</a></li>
-          <li><a>View all replies</a></li>
-          <li><a>Favorited posts</a></li>
-        </ul>
-      </aside>
+    <%- include('../partials/aside') %>
       
       
-    <div class="column is-one-quarter is-offset-one-fifth">
+    <div class="mt-6 column is-one-quarter is-offset-one-quarter">
     
-        <figure class="image is-96x96">
+        
+        <figure class="block image is-96x96">
             <% if (user.image && user.imageURL) { %>
             <img class="is-rounded" src="<%=user.imageURL%>" alt="profile_img">
             <% } else { %>
@@ -40,20 +15,15 @@
             <% } %>
         </figure>
 
+        <div class="block">
+            <p class="ml-5"><%=user.username%></p>  
+            <p class="mr-5"><%=user.email%></p>
+            <p class=""><%=user.createdOn%></p>
+            <p><%=user.bio%></p>
+        </div>
 
-        <p><%=user.username%></p>
-    <p><%=user.email%></p>
-    <p><%=user.createdOn%></p>
-    <img src="<%=user.imageURL%>" alt="profile_img">
-
-    <% if (session.loggedIn && (session.user_id == user._id)) { %>
-    <a href="/users/edit/<%=user._id%>">View and Edit Profile</a>
-    <a href="/users/password/<%=user._id%>">Change password</a>
-    <a href="">Site Appearance</a>
-    <form action="/users/delete/<%=user._id%>?_method=DELETE" method="POST">
-        <button>Delete Account</button>
-    </form>
-    <% } %>
+    </div>
+    
       </div>
     
 </div>
