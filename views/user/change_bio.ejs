@@ -1,0 +1,31 @@
+<% layout('partials/navbar')%>
+
+<div class="columns">
+    <%- include('../partials/aside') %>
+      
+      
+    <div class="mt-6 column is-half is-offset-one-quarter">
+
+        <form class="column is-half is-offset-one-quarter" action="/users/edit/bio/<%=user._id%>?_method=PUT" method="POST">
+            <div class="field">
+                <h1 class="title is-4">Change your bio</h1>
+            </div>
+
+            <div class="field">
+                <p class="control has-icons-left">
+                    <textarea class="textarea" maxlength="300" placeholder="Maximum 300 characters" name="bio" cols="30" rows="10"></textarea>
+                </p>
+            </div>
+                  
+            <div class="field">
+                <p class="control">
+                        <button type="submit" class="button is-success">
+                            Edit
+                        </button>
+                </p>
+            </div>
+            <a href="/users/settings/<%=user._id%>">Discard</a>
+        </form>
+    </div>
+    
+</div>

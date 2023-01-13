@@ -127,17 +127,47 @@ app.get('/users/settings/:id', user_controller.render_settings) // What YOU see 
 
 app.get('/users/edit/:id', user_controller.render_user_edit)
 
-app.put('/users/edit/:id', upload.single('image'), user_controller.edit_user)
+
+// User - Editing profile
+app.get('/users/edit/username/:id', user_controller.render_username_edit)
+
+app.get('/users/edit/image/:id', user_controller.render_image_edit)
+
+app.get('/users/edit/bio/:id', user_controller.render_bio_edit)
+
+// User - Deleting profile
+app.get('/users/delete/confirm/:id', user_controller.render_confirm_delete)
 
 app.delete('/users/delete/:id', user_controller.delete_user)
 
-app.get('/users/password/:id', isLoggedIn, user_controller.render_password_change)
+// User - Password
+app.get('/users/edit/password/:id', isLoggedIn, user_controller.render_password_change)
 
-app.put('/users/password/:id', user_controller.change_password)
+app.put('/users/edit/password/:id', user_controller.change_password)
 
 app.get('/users/forgot_pass', user_controller.render_forgot_password)
 
 app.post('/users/forgot_pass', user_controller.forgot_pass_email)
+
+
+
+
+
+
+
+
+app.put('/users/edit/image/:id', upload.single('image'), user_controller.edit_user_image)
+
+app.put('/users/edit/username/:id', user_controller.edit_username)
+
+app.put('/users/edit/bio/:id', user_controller.edit_bio)
+
+
+
+
+
+
+
 
 app.get('/forgot_your_pass/:email/:token', user_controller.render_pass_form)
 
