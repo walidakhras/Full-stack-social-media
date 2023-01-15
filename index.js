@@ -51,6 +51,8 @@ function passSession(req, res, next) {
     res.locals.isLoggedIn = req.session.loggedIn
     res.locals.loggedInID = req.session.user_id
     res.locals.loggedInName = req.session.username
+    
+
     res.locals.flashSuccess = req.flash('success')
     res.locals.flashInfo = req.flash('info')
     res.locals.flashError = req.flash('error')
@@ -63,7 +65,6 @@ app.use(passSession)
 
 const isLoggedIn = async (req, res, next) => {
     if (!req.session.loggedIn) {
-        console.log("LOGGED IN " + req.session.loggedIn)
         req.flash('info', 'You must be logged in')
         return res.redirect('/login')
     }
@@ -83,9 +84,14 @@ app.get("/login", (req, res) => {
     res.render("login", { session: req.session, host: req.headers.host })
 })
 
-app.get("/new", (req, res) => {
+
+// Posts - Posting
+app.get("/new", isLoggedIn, (req, res) => {
     res.render("posts/new", { session: req.session })
 })
+
+app.post('/new', isLoggedIn, upload.single('image'), post_controller.new_post)
+
 
 app.get("/posts", post_controller.index)
 
@@ -94,8 +100,6 @@ app.post("/login", user_controller.login);
 app.post("/signup", upload.single('image'), user_controller.signup)
 
 app.get('/confirmation/:email/:token', user_controller.confirm_email)
-
-app.post('/new', upload.single('image'), post_controller.new_post)
 
 app.get('/posts/:id', post_controller.post)
 

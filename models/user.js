@@ -15,7 +15,13 @@ const userSchema = new mongoose.Schema({
       default: Date.now
     },
     image: String,
-    imageURL: String
+    imageURL: String,
+    favorites: [
+      {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Post' 
+      }
+    ]
 })
 
 

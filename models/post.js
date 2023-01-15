@@ -10,7 +10,10 @@ const Post = mongoose.model(
       isMain: Boolean,
       title: String,
       image: String,
-      body: String,
+      body: {
+        type: String,
+        maxLength: 5000
+      },
       imageURL: String,
       parent: { 
           type: mongoose.Schema.Types.ObjectId, 
@@ -37,7 +40,8 @@ const Post = mongoose.model(
       views: {
         type: Number,
         default: 1
-      }
+      },
+      username: String
     })
 )
 

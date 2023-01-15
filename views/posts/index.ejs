@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="column">
-                    <a href="posts/<%= post._id %>"> <%= post.title %></a>
+                    <a href="/posts/<%= post._id %>"> <%= post.title %></a>
                     <p><%= post.body %></p>
                     <p><%= post.createdOn %></p>
                     <% if (post.replies.length === 1) { %>

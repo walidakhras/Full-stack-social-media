@@ -70,10 +70,12 @@ const generateS3ImageURL = async (post) => {
 //upload.single('image')
 
 module.exports.new_post = async(req, res, next) => {
-    if (!req.session.loggedIn) { return }
-    // const post = new Post({ title: req.body.title, body: req.body.body, author: req.session.user_id })
     // console.log(req.file)
     // req.file.buffer //Actual image data, what we will send to S3
+    if (!(req.file && req.body.title && req.body.body)) {
+        req.flash('error', "All fields must be filled out")
+        return res.redirect('/new')
+    }
 
     const imageName = await saveS3Image(req)
 
@@ -83,7 +85,8 @@ module.exports.new_post = async(req, res, next) => {
         body: req.body.body, 
         author: req.session.user_id, 
         image: imageName, 
-        parent: null
+        parent: null,
+        username: req.session.username
     })
 
 
@@ -200,23 +203,13 @@ module.exports.edit_post = async(req, res) => {
 
 module.exports.delete_post = async(req, res) => {
     const post = await Post.findById({ _id: req.params.id })
-    if (!post) {
-        res.status(404).send("Post not found")
-        return
-    }
     
-    const params = {
-        Bucket: bucketName,
-        Key: post.image,
-    }
-    const command = new DeleteObjectCommand(params)
-    await s3.send(command)
+    deleteS3Image(post)
 
     for (let reply of post.replies) {
-        await s3.send(new DeleteObjectCommand({
-            Bucket: bucketName,
-            Key: reply.image
-        }))
+        if (reply.image) {
+            deleteS3Image(reply)
+        }
     }
     await Post.deleteMany({ parent: post._id })
     await Post.findOneAndDelete({ _id: req.params.id })
@@ -236,6 +229,7 @@ module.exports.get_child_reply = async(req, res) => {
 
 module.exports.post_reply = async(req, res) => {
     const parent_post = await Post.findById({ _id: req.params.id })
+
     const reply = new Post({ 
         isMain: false,
         title: null,
@@ -243,7 +237,8 @@ module.exports.post_reply = async(req, res) => {
         body: req.body.body, 
         author: req.session.user_id, 
         parent: req.params.id,
-        replyingToUser: null
+        replyingToUser: null,
+        username: req.session.username
     })
 
     if (req.file) {
@@ -297,11 +292,9 @@ module.exports.delete_reply = async(req, res) => {
 }
 
 module.exports.edit_reply = async(req, res) => {
-    console.log('test1!')
     const reply = await Post.findByIdAndUpdate({ _id: req.params.id }, { body: req.body.body, editted: true })
     console.log(req.file.buffer)
     if (req.file) {
-        console.log('test!')
         const imageName = await saveS3Image(req)
         reply.image = imageName
         await reply.save()
@@ -319,21 +312,30 @@ module.exports.render_reply_edit = async(req, res) => {
 
 module.exports.post_child_reply = async(req, res) => {
     const parent = await Post.findById( req.params.parentId )
+    const immediateParent = await Post.findById(req.params.childId)
+    const immediateParentUsername = await User.findOne({ _id: immediateParent.author })
+    console.log("AUTHOR: " + immediateParentUsername)
 
-    const imageName = await saveS3Image(req)
 
     const reply = new Post({ 
         isMain: false,
         title: null,
         body: req.body.body, 
         author: req.session.user_id, 
-        image: imageName, 
         parent: req.params.parentId,
-        immediateParent: req.params.childId
+        replyingToUser: req.params.childId,
+        replyingToUsername: immediateParentUsername.username
     })
+
+    if (req.file) {
+        const imageName = await saveS3Image(req)
+        reply.image = imageName
+    }
+
     parent.replies.push(reply)
-    // child.replies.push(reply) 
+    immediateParent.replies.push(reply)
     await reply.save()
     await parent.save()
+    await immediateParent.save()
     res.redirect(`/posts/${parent._id}`)
 }
