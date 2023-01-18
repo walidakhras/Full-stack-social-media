@@ -1,60 +1,217 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
-    <title>Show Post</title>
-</head>
-<body>
-    <div>
-        <%= data.post.title %>
-        <br>
-        <%= data.post.body %>
-        <br>
-        <%= data.author.username %>
-        <br>
-        <a href="/users/<%=data.author._id%>">View profile</a>
-        <br>
-        <%= data.post.createdOn %>
-        <br>
-        <img src="<%=data.post.imageURL%>" alt="image">
-        <br>
-        <% if (data.session.loggedIn) { %>
-        <a href="/posts/reply/<%=data.post._id%>">Reply</a>
-        <% } %>
-        <% if (data.session.loggedIn && (data.author._id == data.session.user_id)) { %>
-            <p><%=data.session.loggedIn%></p>
-            <p><%=data.author._id %> </p>
-            <p><%=data.session.user_id%></p>
-            <a href="/posts/edit/<%=data.post._id%>">Edit</a>
-            <form action="/posts/delete/<%=data.post._id%>?_method=DELETE" method="POST">
-                <button>Delete this post</button>
-            </form>
-        <% } %>
-        
-        <div>
-            <% if (data.replies.length === 0) { %>
-                <p>No replies to show.</p>
-            <% } else { %>
-                <% for (let reply of data.replies) { %>
-                <p><%=reply._id%></p>
-                <p>Body: <%=reply.body%></p>
-                <img src="<%=reply.imageURL%>" alt="reply_image">
-                <% if (data.session.loggedIn) { %>
-                <a href="/posts/reply/<%=data.post._id%>/<%=reply._id%>">Reply to this reply</a>
-                <% } %>
+<% layout('partials/navbar')%>
 
-                <% if (data.session.loggedIn && (data.author._id == data.session.user_id)) { %>
-                <a href="/posts/reply/edit/<%=reply._id%>">Edit</a>
-                <form action="/posts/reply/delete/<%=reply._id%>?_method=DELETE" method="POST">
-                    <button>Delete this reply</button>
-                </form>
-                <!-- <a href="/posts/reply/delete/<%=reply._id%>">Delete</a> -->
-                <% } %>
-            <% } } %>
+
+<div class="block mt-6">
+        <div class="block box">
+
+            <div class="columns">
+                <div class="column is-one-third">
+                    <figure class="image">
+                        <img src="<%=data.post.imageURL%>" alt="post_img">
+                    </figure>
+                </div>
+
+                <div class="column">
+                    <h1 class="title"><%= data.post.title %></h1>
+                    <div class="columns">
+                        <div class="column is-narrow">
+                            <p class="is-size-7">Posted on <%=data.post.createdOn%> by <a class="is-size-7" href="/users/<%=data.author._id%>"><%= data.post.username %></a>
+                            </p> 
+                        </div>
+                        <% if (isLoggedIn) { %>
+
+                            <div class="column is-narrow">
+                                <!-- <button class="button is-small" id="reply">
+                                    Reply
+                                </button> -->
+                                <a class="is-size-7" id="reply">Reply</a>
+                            </div>
+                            
+                            <% if (data.author._id == loggedInID) { %>
+                                <div class="column is-narrow">
+                                    <a class="is-size-7" href="/posts/edit/<%=data.post._id%>">Edit</a>
+                                </div>
+                                <div class="column">
+                                    <form action="/posts/delete/<%=data.post._id%>?_method=DELETE" method="POST">
+                                        <button class="button is-ghost is-small">Delete</button>
+                                    </form>
+                                </div>
+                            <% } %>
+                        <% } %>
+                    </div>
+                    
+
+                    <p><%= data.post.body %></p>
+                    
+                </div>
+            </div>
+
+            <% if (isLoggedIn) { %>
+                <!-- <a href="/posts/reply/<%=data.post._id%>">Reply to this post</a> -->
+                
+                <div id="replydiv" style="display : none">
+                    <div id="mydiv">
+                    
+                        <form class="column is-half is-offset-one-quarter" action="/posts/reply/<%=data.post._id%>" method="POST" enctype="multipart/form-data">
+                    
+                            <div class="field">
+                                <p class="control">
+                                    <textarea class="textarea" name="body" cols="80" rows="5" placeholder="Max 5000 characters" maxlength="5000" required></textarea>
+                                </p>
+                            </div>
+                            
+                            <div class="field">
+                                <p class="control has-icons-left">
+                                    <input class="input" type="file" name="image" id="image" accept="image/png, image/jpeg, image/jpg">
+                                    <span class="icon is-small is-left">
+                                        <i class="bi bi-images"></i>
+                                    </span>
+                                </p>
+                            </div>
+                        
+                        
+                            <div class="field">
+                                <p class="control">
+                                    <button type="submit" class="button is-success">
+                                        Post
+                                    </button>
+                                </p>
+                            </div>
+                        
+                        </form>
+                    </div>
+                </div>
+            <% } %>
         </div>
-    </div>
-</body>
-</html>
+
+        <% if (data.replies.length === 0) { %>
+        <p>No replies to show.</p>
+        <% } else { %>
+            <% for (let reply of data.replies) { %>
+                
+            <div class="block box">
+                <div class="columns">
+                    <div class="column is-one-third">
+                        <% if (reply.image && reply.imageURL) { %>
+                            <figure class="image">
+                                <img src="<%=reply.imageURL%>" alt="reply_img">
+                            </figure>
+                        <% } %>
+                    </div>
+    
+                    <div class="column">
+                        <div class="columns">
+                            <div class="column is-narrow">
+                                <p class="is-size-7">Posted on <%=reply.createdOn%> by <a class="is-size-7" href="/users/<%=reply.author%>"><%= reply.username %></a></p> 
+                            </div>
+                            <% if (isLoggedIn) { %>
+                                <div class="column is-narrow">
+                                    <!-- <button id="<%=reply._id%>" class="button" onclick="myFunction(this.id)">
+                                        Reply
+                                    </button> -->
+                                    <a class="is-size-7" id="<%=reply._id%>" onclick="myFunction(this.id)">Reply</a>
+                                </div>
+                                <% if (reply.author == loggedInID) { %>
+                                    <div class="column is-narrow">
+                                        <a class="is-size-7" href="/posts/reply/edit/<%=reply._id%>">Edit</a>
+                                    </div>
+                                    <div class="column">
+                                        <form action="/posts/reply/delete/<%=reply._id%>?_method=DELETE" method="POST">
+                                            <button class="button is-ghost is-size-7">Delete this post</button>
+                                        </form>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        </div>
+                        
+                        <div class="column">
+                            <% if (reply.replyingToUser) { %>
+                                <p class="is-italic">@<%=reply.replyingToUsername%></p>
+                            <% } %>
+                            <p><%=reply.body%></p>
+                        </div>
+                        
+                    </div>
+                </div>
+
+
+
+                        <% if (isLoggedIn) { %>
+                            
+                            <div id="<%=reply.id%>_div" style="display : none">
+
+                                    <div id="mydiv">
+                                    
+                                        <form class="column is-half is-offset-one-quarter" action="/posts/reply/<%=data.post._id%>/<%=reply._id%>" method="POST" enctype="multipart/form-data">
+                                    
+                                            <div class="field">
+                                                <p class="control">
+                                                    <textarea class="textarea" name="body" cols="80" rows="5" placeholder="Max 5000 characters" maxlength="5000" required></textarea>
+                                                </p>
+                                            </div>
+                                            
+                                            <div class="field">
+                                                <p class="control has-icons-left">
+                                                    <input class="input" type="file" name="image" id="image" accept="image/png, image/jpeg, image/jpg">
+                                                    <span class="icon is-small is-left">
+                                                        <i class="bi bi-images"></i>
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        
+                                        
+                                            <div class="field">
+                                                <p class="control">
+                                                    <button type="submit" class="button is-success">
+                                                        Post
+                                                    </button>
+                                                </p>
+                                            </div>
+                                        
+                                        </form>
+                                    </div>
+                                </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+        <% } %>
+</div>
+
+<script>
+    const replyButton = document.getElementById('reply')
+    const replyDiv = document.getElementById('replydiv')
+    replyButton.addEventListener('click', () => {
+        if (replyDiv.style.display === "none") {
+            replyDiv.style.display = "inline"
+            replyButton.innerHTML = "Close"
+        } else {
+            replyDiv.style.display = "none"
+            replyButton.innerHTML = "Reply"
+        }
+    })
+
+
+    function myFunction(id) {
+        const div = document.getElementById(id + "_div")
+        if (div.style.display == "none") {
+            div.style.display = "inline"
+            document.getElementById(id).innerHTML = "Close"
+        } else {
+            div.style.display = "none"
+            document.getElementById(id).innerHTML = "Reply"
+        }
+        
+    }
+
+    
+</script>
+
+
+
+
+
+
+
+

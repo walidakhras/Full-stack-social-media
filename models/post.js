@@ -8,9 +8,15 @@ const Post = mongoose.model(
         default: false
       },
       isMain: Boolean,
-      title: String,
+      title: {
+        type: String,
+        maxLength: 100
+      },
       image: String,
-      body: String,
+      body: {
+        type: String,
+        maxLength: 5000
+      },
       imageURL: String,
       parent: { 
           type: mongoose.Schema.Types.ObjectId, 
@@ -20,6 +26,7 @@ const Post = mongoose.model(
           type: mongoose.Schema.Types.ObjectId, 
           ref: 'User'
       },
+      replyingToUsername: String,
       author: {  
           type: mongoose.Schema.Types.ObjectId, 
           ref: 'User' 
@@ -37,7 +44,8 @@ const Post = mongoose.model(
       views: {
         type: Number,
         default: 1
-      }
+      },
+      username: String
     })
 )
 

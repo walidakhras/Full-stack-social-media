@@ -1,7 +1,10 @@
 const mongoose = require("mongoose")
 
 const userSchema = new mongoose.Schema({
-    username: String,
+    username: {
+      type: String,
+      maxLength: 30
+    },
     email: String,
     password: String,
     bio: {
@@ -15,7 +18,13 @@ const userSchema = new mongoose.Schema({
       default: Date.now
     },
     image: String,
-    imageURL: String
+    imageURL: String,
+    favorites: [
+      {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Post' 
+      }
+    ]
 })
 
 

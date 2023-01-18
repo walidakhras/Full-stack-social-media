@@ -1,79 +1,19 @@
 const Post = require('../models/post')
 const User = require('../models/user')
-const multer = require('multer')
-const crypto = require('crypto')
-const sharp = require('sharp')
 
-const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3")
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { catchErrors } = require('../funcs/asyncErrors')
+const { saveS3Image, deleteS3Image, generateS3ImageURL } = require('../funcs/S3setup')
 
 
-
-// const storage = multer.memoryStorage()
-// const upload = multer({ storage: storage })
-require('dotenv').config()
-
-const bucketName = process.env.BUCKET_NAME
-const bucketRegion = process.env.BUCKET_REGION
-const accessKey = process.env.ACCESS_KEY
-const secretAccessKey = process.env.SECRET_ACCESS_KEY
-
-const s3 = new S3Client({
-    credentials: {
-        accessKeyId: accessKey,
-        secretAccessKey: secretAccessKey,
-    },
-    region: bucketRegion
-})
-
-const randomImageName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex')
-
-const saveS3Image = async (req) => {
-    const buffer = await sharp(req.file.buffer).resize({ height: 400, width: 400, fit: "contain" }).toBuffer()
-    const imageName = randomImageName()
-    const params = {
-        Bucket: bucketName,
-        Key: imageName,
-        Body: buffer,
-        ContentType: req.file.mimetype
-    }
-    const command = new PutObjectCommand(params)
-    await s3.send(command)
-
-    return imageName
+module.exports.render_new = (req, res) => {
+    res.render("posts/new", { session: req.session })
 }
 
-const deleteS3Image = async (post) => {
-    const delete_params = {
-        Bucket: bucketName,
-        Key: post.image,
+module.exports.new_post = catchErrors(async(req, res, next) => {
+    if (!(req.file && req.body.title && req.body.body)) {
+        req.flash('error', "All fields must be filled out")
+        return res.redirect('/new')
     }
-
-    const delete_command = new DeleteObjectCommand(delete_params)
-    await s3.send(delete_command)
-}
-
-const generateS3ImageURL = async (post) => {
-    const getObjectParams = {
-        Bucket: bucketName,
-        Key: r.image
-    }
-
-    const command = new GetObjectCommand(getObjectParams)
-    const url = await getSignedUrl(s3, command, { expiresIn: 3600 })
-    post.imageURL = url
-    await post.save()
-}
-
-
-
-//upload.single('image')
-
-module.exports.new_post = async(req, res, next) => {
-    if (!req.session.loggedIn) { return }
-    // const post = new Post({ title: req.body.title, body: req.body.body, author: req.session.user_id })
-    // console.log(req.file)
-    // req.file.buffer //Actual image data, what we will send to S3
 
     const imageName = await saveS3Image(req)
 
@@ -83,27 +23,29 @@ module.exports.new_post = async(req, res, next) => {
         body: req.body.body, 
         author: req.session.user_id, 
         image: imageName, 
-        parent: null
+        parent: null,
+        username: req.session.username
     })
 
 
     await post.save()
     res.redirect(`/posts/${post._id}`)
-}
+})
 
-module.exports.index = async(req, res) => {
+module.exports.index = catchErrors(async(req, res) => {
     const posts = await Post.find()
 
     for (let post of posts) {
         if (post.isMain && (!post.imageURL)) {
-            generateS3ImageURL(post)
+            post.imageURL = await generateS3ImageURL(post)
+            await post.save()
         }
     }
 
     res.render('posts/index', { posts })
-}
+})
 
-module.exports.post = async(req, res) => {
+module.exports.post = catchErrors(async(req, res) => {
     const post = await Post.findById(req.params.id)
     const author = await User.findById(post.author)    
 
@@ -113,129 +55,76 @@ module.exports.post = async(req, res) => {
         const r = await Post.findById({ _id: reply })
 
         if (r.image) {
-            const getObjectParams = {
-                Bucket: bucketName,
-                Key: r.image
-            }
-            const command = new GetObjectCommand(getObjectParams)
-            const url = await getSignedUrl(s3, command, { expiresIn: 3600 })
-            r.imageURL = url
+            r.imageURL = await generateS3ImageURL(r)
             await r.save()
         }
         replies.push(r)
 
-
-        // const getObjectParams = {
-        //     Bucket: bucketName,
-        //     Key: r.image
-        // }
-        // const command = new GetObjectCommand(getObjectParams)
-        // const url = await getSignedUrl(s3, command, { expiresIn: 3600 })
-        // r.imageURL = url
-        // await r.save()
-        // replies.push(r)
-    
     }))
+    post.imageURL = await generateS3ImageURL(post)
     
-    const getObjectParams = {
-        Bucket: bucketName,
-        Key: post.image
-    }
-    const command = new GetObjectCommand(getObjectParams)
-    const url = await getSignedUrl(s3, command, { expiresIn: 3600 })
-
-    post.imageURL = url
     post.views = post.views + 1
     await post.save()
 
-    // post = await Post.findByIdAndUpdate({ _id: req.params.id}, { imageURL: url, views: { $inc: { views: 1 }}})
+    res.render('posts/post', { data: { post, author, session: req.session, replies }})
+})
 
-    res.render('posts/post', { data: { post, author, session: req.session, url, replies }})
-}
-
-module.exports.render_edit = async(req, res) => {
+module.exports.render_edit = catchErrors(async(req, res) => {
     const post = await Post.findById(req.params.id)
     res.render('posts/edit', { post })
-}
+})
  
-module.exports.edit_post = async(req, res) => {
+module.exports.edit_post = catchErrors(async(req, res) => {
     
     const post = await Post.findById(req.params.id)
 
-    if (post.image) {
-        deleteS3Image(post)
+    if (!(req.body.title && req.body.body)) {
+        req.flash('error', "All fields must be filled out")
+        return res.redirect(`/posts/${post._id}`)
     }
-    // const delete_params = {
-    //     Bucket: bucketName,
-    //     Key: post.image,
-    // }
 
-    // const delete_command = new DeleteObjectCommand(delete_params)
-    // await s3.send(delete_command)
+    if (req.file && post.image) {
+        deleteS3Image(post)
+        const imageName = await saveS3Image(req)
+        post.image = imageName
+    }
 
-    const imageName = await saveS3Image(req)
-
-    // const buffer = await sharp(req.file.buffer).resize({ height: 500, width: 500, fit: "contain" }).toBuffer()
-
-    // const imageName = randomImageName()
-    // const new_img_params = {
-    //     Bucket: bucketName,
-    //     Key: imageName,
-    //     Body: buffer,
-    //     ContentType: req.file.mimetype
-    // }
-
-    // const new_img_command = new PutObjectCommand(new_img_params)
-    // await s3.send(new_img_command)
 
     post.title = req.body.title
     post.body = req.body.body
     post.editted = true 
-    post.image = imageName
     await post.save()
-
-    // post = await Post.findByIdAndUpdate({ _id: req.params.id }, { title: req.body.title, body: req.body.body, editted: true })
     res.redirect(`/posts/${post._id}`)
-}
+})
 
-module.exports.delete_post = async(req, res) => {
+module.exports.delete_post = catchErrors(async(req, res) => {
     const post = await Post.findById({ _id: req.params.id })
-    if (!post) {
-        res.status(404).send("Post not found")
-        return
-    }
     
-    const params = {
-        Bucket: bucketName,
-        Key: post.image,
-    }
-    const command = new DeleteObjectCommand(params)
-    await s3.send(command)
+    deleteS3Image(post)
 
     for (let reply of post.replies) {
-        await s3.send(new DeleteObjectCommand({
-            Bucket: bucketName,
-            Key: reply.image
-        }))
+        if (reply.image) {
+            deleteS3Image(reply)
+        }
     }
     await Post.deleteMany({ parent: post._id })
     await Post.findOneAndDelete({ _id: req.params.id })
     res.redirect('/posts')
-}
+})
 
-module.exports.get_reply = async(req, res) => {
+module.exports.get_reply = catchErrors(async(req, res) => {
     const parent_post = await Post.findById({ _id: req.params.id })
     res.render('posts/reply', { parent_post })
-}
+})
 
-module.exports.get_child_reply = async(req, res) => {
+module.exports.get_child_reply = catchErrors(async(req, res) => {
     const parent_post = await Post.findById(req.params.parentId)
-    // const child = await Post.findById(req.params.childId)
     res.render('posts/reply', { parent_post })
-}
+})
 
-module.exports.post_reply = async(req, res) => {
+module.exports.post_reply = catchErrors(async(req, res) => {
     const parent_post = await Post.findById({ _id: req.params.id })
+
     const reply = new Post({ 
         isMain: false,
         title: null,
@@ -243,7 +132,8 @@ module.exports.post_reply = async(req, res) => {
         body: req.body.body, 
         author: req.session.user_id, 
         parent: req.params.id,
-        replyingToUser: null
+        replyingToUser: null,
+        username: req.session.username
     })
 
     if (req.file) {
@@ -252,26 +142,14 @@ module.exports.post_reply = async(req, res) => {
         reply.image = imageName
     }
 
-    // const buffer = await sharp(req.file.buffer).resize({ height: 500, width: 500, fit: "contain" }).toBuffer()
-    // const imageName = randomImageName()
-    // const params = {
-    //     Bucket: bucketName,
-    //     Key: imageName,
-    //     Body: buffer,
-    //     ContentType: req.file.mimetype
-    // }
-
-    // const command = new PutObjectCommand(params)
-    // await s3.send(command)
-
     parent_post.replies.push(reply)
     await reply.save()
     await parent_post.save()
     
     res.redirect(`/posts/${parent_post._id}`)
-}
+})
 
-module.exports.delete_reply = async(req, res) => {
+module.exports.delete_reply = catchErrors(async(req, res) => {
     const reply = await Post.findById({ _id: req.params.id })
     if (!reply) {
         res.status(404).send("Post not found")
@@ -283,25 +161,19 @@ module.exports.delete_reply = async(req, res) => {
     if (reply.image) {
         deleteS3Image(reply)
     }
-    // const params = {
-    //     Bucket: bucketName,
-    //     Key: reply.image,
-    // }
-    // const command = new DeleteObjectCommand(params)
-    // await s3.send(command)
-
 
     await Post.findOneAndDelete({ _id: req.params.id })
     
     res.redirect('/posts')
-}
+})
 
-module.exports.edit_reply = async(req, res) => {
-    console.log('test1!')
+module.exports.edit_reply = catchErrors(async(req, res) => {
     const reply = await Post.findByIdAndUpdate({ _id: req.params.id }, { body: req.body.body, editted: true })
-    console.log(req.file.buffer)
+
     if (req.file) {
-        console.log('test!')
+        if (reply.image) {
+            deleteS3Image(reply)
+        }
         const imageName = await saveS3Image(req)
         reply.image = imageName
         await reply.save()
@@ -309,31 +181,52 @@ module.exports.edit_reply = async(req, res) => {
     const parent_post = await Post.findById(reply.parent)
 
     res.redirect(`/posts/${parent_post._id}`)
-}
+})
 
-module.exports.render_reply_edit = async(req, res) => {
+module.exports.render_reply_edit = catchErrors(async(req, res) => {
     const reply = await Post.findById({ _id: req.params.id })
     const parent_post = reply.parent
-    res.render('posts/edit_reply', { reply, parent_post })
-}
+    res.render('posts/edit_reply', { reply, parent_post, session: req.session })
+})
 
-module.exports.post_child_reply = async(req, res) => {
+module.exports.post_child_reply = catchErrors(async(req, res) => {
     const parent = await Post.findById( req.params.parentId )
-
-    const imageName = await saveS3Image(req)
+    const immediateParent = await Post.findById(req.params.childId)
+    const immediateParentUsername = await User.findOne({ _id: immediateParent.author })
 
     const reply = new Post({ 
         isMain: false,
         title: null,
         body: req.body.body, 
         author: req.session.user_id, 
-        image: imageName, 
         parent: req.params.parentId,
-        immediateParent: req.params.childId
+        replyingToUser: req.params.childId,
+        replyingToUsername: immediateParentUsername.username,
+        username: req.session.username
     })
+
+    if (req.file) {
+        const imageName = await saveS3Image(req)
+        reply.image = imageName
+    }
+
     parent.replies.push(reply)
-    // child.replies.push(reply) 
+    immediateParent.replies.push(reply)
     await reply.save()
     await parent.save()
-    res.redirect(`/posts/${parent._id}`)
-}
+    await immediateParent.save()
+    return res.redirect(`/posts/${parent._id}`)
+})
+
+module.exports.search = catchErrors(async(req, res) => {
+    const regex = new RegExp(req.body.search, 'i') 
+    const posts = await Post.find({
+        "$or": [
+            { title: { $regex: regex } },
+            { body: { $regex: regex } }
+        ]
+    })
+    console.log(posts)
+    res.render("posts/search_result", { posts })
+})
+

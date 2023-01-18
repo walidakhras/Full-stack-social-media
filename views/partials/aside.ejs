@@ -4,7 +4,7 @@
         <p class="menu-label">
             PROFILE
         </p>
-      <li><a href="/users/settings/:id" class="mb-2">View profile</a></li>
+      <li><a href="/users/settings/<%=user._id%>" class="mb-2">View profile</a></li>
       <li>
         <p class="menu-label">
             Edit your information
@@ -21,8 +21,8 @@
       <p class="menu-label">
         POSTS
       </p>
-      <li><a>View all posts</a></li>
-      <li><a>View all replies</a></li>
+      <li><a href="/users/settings/allposts/<%=user._id%>">View all posts</a></li>
+      <li><a href="/users/settings/allreplies/<%=user._id%>">View all replies</a></li>
       <li><a>Favorited posts</a></li>
     </ul>
 </aside>
