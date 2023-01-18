@@ -1,4 +1,42 @@
-<!DOCTYPE html>
+<% layout('partials/navbar')%>
+
+    <div class="columns">
+
+        <form class="column is-half is-offset-one-quarter" action="/posts/reply/edit/<%=reply._id%>?_method=PUT" method="POST" enctype="multipart/form-data">
+            
+            <div class="field">
+                <h1 class="title is-4">Edit this Reply</h1>
+            </div>
+
+            <div class="field">
+                <p class="control has-icons-left">
+                    <textarea class="textarea" name="body" cols="30" rows="10" placeholder="<%=reply.body%>" maxlength="5000"></textarea>
+                </p>
+            </div>
+
+            <div class="field">
+                <p class="control has-icons-left">
+                  <input class="input" type="file" name="image" accept="image/png, image/jpeg, image/jpg">
+                  <span class="icon is-small is-left">
+                    <i class="bi bi-images"></i>
+                  </span>
+                </p>
+            </div>
+                  
+            <div class="field">
+                <p class="control">
+                        <button type="submit" class="button is-success">
+                            Edit
+                        </button>
+                </p>
+            </div>
+            <a href="/posts/<%=parent_post._id%>">Discard</a>
+        </form>
+
+        
+    </div>
+
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -21,4 +59,4 @@
 
     <a href="/posts/<%=parent_post._id%>">Discard</a>
 </body>
-</html>
+</html> -->

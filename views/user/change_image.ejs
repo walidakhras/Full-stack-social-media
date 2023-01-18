@@ -3,10 +3,10 @@
     <div class="columns">
         <%- include('../partials/aside') %>
 
-        <form class="column is-half is-offset-one-quarter" action="/users/edit/image/<%=user._id%>?_method=PUT" method="POST" enctype="multipart/form-data">
+        <form class="column mt-6 is-offset-one-fifth is-one-quarter" action="/users/edit/image/<%=user._id%>?_method=PUT" method="POST" enctype="multipart/form-data">
             
             <div class="field">
-                <h1 class="title is-4">Edit Your Profile Picture</h1>
+                <h1 class="title is-4">Change Your Profile Picture</h1>
             </div>
 
             <!-- <div class="field">
@@ -30,7 +30,7 @@
             <div class="field">
                 <p class="control">
                         <button type="submit" class="button is-success">
-                            Edit
+                            Change
                         </button>
                 </p>
             </div>

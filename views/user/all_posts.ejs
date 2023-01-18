@@ -1,0 +1,34 @@
+<% layout('partials/navbar')%>
+
+<div class="columns">
+    <%- include('../partials/aside') %>
+         
+        <div class="column mt-6 is-half">
+            <% if (postsArr.length === 0) { %>
+                <div class="column">
+                        <h1 class="title is-1">
+                            No posts to show
+                        </h1>
+                </div>
+            <% } else { %>
+            <% for (let post of postsArr) { %>
+                <div class="box">
+                    <figure class="block image is-96x96">
+                        <% if (post.image && post.imageURL) { %>
+                        <img src="<%=post.imageURL%>" alt="pic">
+                        <% } else { %>
+                        <img src="https://www.nicepng.com/png/detail/73-730154_open-default-profile-picture-png.png" alt="pic"> 
+                        <% } %>
+                    </figure>
+                    <h4 class="title is-4"><%=post.title%></h1>
+                    <% if (post.body.length > 20) { %>
+                    <p><%= post.body.substr(0, 20) %>...</p>
+                    <% } else { %>
+                    <p><%= post.body %></p>
+                    <% } %>
+                    <a href="/posts/<%=post._id%>">View</a>
+                </div>
+            <% } } %>
+        </div>
+    
+</div>
