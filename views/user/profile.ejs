@@ -1,6 +1,6 @@
 <% layout('partials/navbar')%>
 
-<div class="columns">
+<!-- <div class="columns">
       
     <div class="mt-6 column is-half is-offset-one-quarter">
     
@@ -22,4 +22,38 @@
 
     </div>
     
+</div>
+ -->
+
+<div class="columns">
+      
+    <div class="mt-6 column is-half is-offset-one-quarter">
+    
+        
+        <figure class="block image is-96x96">
+            <% if (user.image && user.imageURL) { %>
+            <img class="is-rounded" src="<%=user.imageURL%>" alt="profile_img">
+            <% } else { %>
+            <img class="is-rounded" src="https://www.nicepng.com/png/detail/73-730154_open-default-profile-picture-png.png" alt="profile_img"> 
+            <% } %>
+        </figure>
+
+
+        <div class="block">
+            <div class="block">
+                <h4 class="ml-1 title"><%=user.username%> <span class="is-size-6"> created on: <%=(user.createdOn.getMonth() + 1) + "/" + user.createdOn.getDate() + "/" + user.createdOn.getFullYear()%> </span></h4>
+            </div>
+            <div class="box">
+                <h5 class="ml-2 title is-5"><%=user.bio%></h5>
+            </div>
+        </div>
+
+    </div>
+    
+</div>
+
+<div class="columns">
+    <div class="column is-half is-offset-one-quarter">
+        <h1 class="title">Recent Posts</h1>
+    </div>
 </div>

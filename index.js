@@ -27,9 +27,15 @@ app.use(method_override('_method'))
 app.use(flash())
 
 app.use(session({
+    name: 'epicsession',
 	secret: process.env.SESSION_SECRET,
 	resave: true,
-	saveUninitialized: true
+	saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
 }))
 
 const database = 'mongodb://localhost:27017/social-media'
@@ -185,9 +191,9 @@ app.get('/users/edit/password/:id', isUser, user_controller.render_password_chan
 
 app.put('/users/edit/password/:id', isUser, user_controller.change_password)
 
-app.get('/users/forgot_pass', user_controller.render_forgot_password)
+app.get('/forgot_pass', user_controller.render_forgot_password)
 
-app.post('/users/forgot_pass', user_controller.forgot_pass_email)
+app.post('/forgot_pass', user_controller.forgot_pass_email)
 
 app.get('/forgot_your_pass/:email/:token', user_controller.render_pass_form)
 
