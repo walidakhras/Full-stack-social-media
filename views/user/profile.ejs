@@ -55,5 +55,16 @@
 <div class="columns">
     <div class="column is-half is-offset-one-quarter">
         <h1 class="title">Recent Posts</h1>
+        <div>
+            <% if (recentPosts.length === 0) { %>
+            <p>None to display</p>
+            <% } else { %>
+            <% for (let post of recentPosts) { %>
+            <div class="box">
+                <h4 class="title is-4"><%=post.title%></h4>
+                <a href="/posts/<%=post._id%>">View Post</a>
+            </div>
+            <% } } %>
+        </div> 
     </div>
 </div>

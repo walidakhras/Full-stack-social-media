@@ -6,6 +6,7 @@ const method_override = require('method-override')
 const multer = require('multer')
 const ejsMate = require('ejs-mate')
 const flash = require('connect-flash')
+const mongoSanitize = require('express-mongo-sanitize');
 
 const user_controller = require('./controllers/users.js')
 const post_controller = require('./controllers/posts')
@@ -14,7 +15,6 @@ const Post = require("./models/post.js")
 
 
 require('dotenv').config()
-// const bodyParser = require('body-parser')
 
 const app = express()
 
@@ -25,6 +25,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static(__dirname))
 app.use(method_override('_method'))
 app.use(flash())
+app.use(mongoSanitize())
 
 app.use(session({
     name: 'epicsession',

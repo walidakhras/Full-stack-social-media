@@ -145,7 +145,8 @@ module.exports.show_user_profile = catchErrors(async (req, res) => {
     if (req.params.id == req.session.user_id) {
         return res.render('user/user_settings', { user, session: req.session })
     } else {
-        return res.render('user/profile', { user, session: req.session })
+        const recentPosts = (await Post.find({ author: user._id, isMain: true })).slice(0, 3)
+        return res.render('user/profile', { user, session: req.session, recentPosts })
     }
 })
 
