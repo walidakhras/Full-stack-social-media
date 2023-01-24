@@ -6,6 +6,7 @@ const method_override = require('method-override')
 const multer = require('multer')
 const ejsMate = require('ejs-mate')
 const flash = require('connect-flash')
+const mongoSanitize = require('express-mongo-sanitize');
 
 const user_controller = require('./controllers/users.js')
 const post_controller = require('./controllers/posts')
@@ -14,7 +15,6 @@ const Post = require("./models/post.js")
 
 
 require('dotenv').config()
-// const bodyParser = require('body-parser')
 
 const app = express()
 
@@ -25,11 +25,18 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static(__dirname))
 app.use(method_override('_method'))
 app.use(flash())
+app.use(mongoSanitize())
 
 app.use(session({
+    name: 'epicsession',
 	secret: process.env.SESSION_SECRET,
 	resave: true,
-	saveUninitialized: true
+	saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
 }))
 
 const database = 'mongodb://localhost:27017/social-media'
@@ -185,9 +192,9 @@ app.get('/users/edit/password/:id', isUser, user_controller.render_password_chan
 
 app.put('/users/edit/password/:id', isUser, user_controller.change_password)
 
-app.get('/users/forgot_pass', user_controller.render_forgot_password)
+app.get('/forgot_pass', user_controller.render_forgot_password)
 
-app.post('/users/forgot_pass', user_controller.forgot_pass_email)
+app.post('/forgot_pass', user_controller.forgot_pass_email)
 
 app.get('/forgot_your_pass/:email/:token', user_controller.render_pass_form)
 

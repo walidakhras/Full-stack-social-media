@@ -4,7 +4,7 @@
     <%- include('../partials/aside') %>
       
       
-    <div class="mt-6 column is-one-quarter is-offset-one-quarter">
+    <div class="mt-6 column is-half">
     
         
         <figure class="block image is-96x96">
@@ -17,10 +17,14 @@
 
 
         <div class="block">
-            <h4 class="ml-1 title"><%=user.username%></h4>
-            <h5 class="ml-2 title is-5"><%=user.bio%></h5>
-            <p class="">Created on: <%=user.createdOn%></p>
-            <p class="mr-5"><%=user.email%></p>
+            <div class="block">
+                <h4 class="ml-1 title"><%=user.username%> <span class="is-size-6"> created on: <%=(user.createdOn.getMonth() + 1) + "/" + user.createdOn.getDate() + "/" + user.createdOn.getFullYear()%> </span></h4>
+            </div>
+            <div class="box">
+                <h5 class="ml-2 title is-5"><%=user.bio%></h5>
+            </div>
+
+            <p class="mr-5">Email associated with this account: <%=user.email%></p>
         </div>
 
     </div>

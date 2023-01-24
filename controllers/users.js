@@ -145,7 +145,8 @@ module.exports.show_user_profile = catchErrors(async (req, res) => {
     if (req.params.id == req.session.user_id) {
         return res.render('user/user_settings', { user, session: req.session })
     } else {
-        return res.render('user/profile', { user, session: req.session })
+        const recentPosts = (await Post.find({ author: user._id, isMain: true })).slice(0, 3)
+        return res.render('user/profile', { user, session: req.session, recentPosts })
     }
 })
 
@@ -159,7 +160,7 @@ module.exports.render_settings = catchErrors(async (req, res) => {
             if (user.image) {
                 user.imageURL = await generateS3ImageURL(user)
             }
-            res.render('user/user_settings', { user, session: req.session })
+            return res.render('user/user_settings', { user, session: req.session })
         }
         return res.redirect("/posts")
     })
@@ -238,9 +239,10 @@ module.exports.change_password = catchErrors(async (req, res) => {
     res.redirect(`/users/edit/password/${user._id}`)
 })
 
-module.exports.render_forgot_password = catchErrors(async (req, res) => {
-    res.render('user/forgot_password', { session: req.session })
-})
+module.exports.render_forgot_password = (req, res) => {
+    const user = null
+    res.render('user/forgot_password', { user, session: req.session })
+}
 
 module.exports.forgot_pass_email = catchErrors(async (req, res) => {
     User.findOne({ email: req.body.email }, (err, user) => {
@@ -286,10 +288,16 @@ module.exports.render_pass_form = catchErrors(async (req, res) => {
 
 module.exports.change_forgotten_pass = catchErrors(async (req, res) => {
     const user = await User.findOne({ email: req.params.email })
-
-    if (req.body.pass1 !== req.body.pass2) {
-        req.flash('error', 'Passwords do not match')
+    if (!user) {
+        req.flash('error', "User does not exist")
         return res.redirect('/login')
+    } else if (!req.body.email) {
+        req.flash('error', 'Please enter your email')
+        return res.redirect(`/forgot_your_pass/${req.params.email}/${req.params.token}`)
+    }
+    else if (req.body.pass1 !== req.body.pass2) {
+        req.flash('error', 'Passwords do not match')
+        return res.redirect(`/forgot_your_pass/${req.params.email}/${req.params.token}`)
     } else {
         user.password = hashPassword(req.body.pass1)
         await user.save()
