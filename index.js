@@ -96,7 +96,7 @@ const isUser = async(req, res, next) => {
     next()
 }
 
-
+// TODO: Cleanup routes using the built in express router
 
 app.get("/", (req, res) => {
     res.redirect('/posts')
